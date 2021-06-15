@@ -1,0 +1,259 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema",
+  "$id": "relationship-schema-v1",
+  "type": "object",
+  "title": "Entity Relationship synthesis schema",
+  "description": "Schema used to verify that a given entity relationship yaml is valid",
+  "required": [
+    "relationships"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "relationships": {
+      "$id": "#/relationships",
+      "type": "array",
+      "title": "Rules for Relationship Synthesis",
+      "description": "Information necessary to synthesize the relatioship between two entity types",
+      "minItems": 1,
+      "examples": [{
+        "instrumentation.provider": "newrelic",
+        "eventType": ["Span"],
+        "relationship": "CALLS",
+        "target": {
+          "domain": "EXT",
+          "type": "SERVICE",
+          "domainId": "peer.hostname",
+          "encodeIdentifierInGUID": true,
+          "processor": "hostExtractor"
+        },
+        "conditions": [{
+          "attribute": "requestUrl"
+        }]
+      }],
+      "items": {
+        "$id": "#/relationships/items",
+        "type": "object",
+        "oneOf" : [
+          {"required" : [
+            "instrumentation.provider",
+            "eventType",
+            "relationship",
+            "source"
+          ]},
+          {"required" : [
+            "instrumentation.provider",
+            "eventType",
+            "relationship",
+            "target"
+          ]}
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "instrumentation.provider": {
+            "$id": "#relationships/items/instrumentation.provider",
+            "type": "string",
+            "title": "Instrumentation Provider",
+            "description": "instrumention.provider agent or source from where the telemetry is coming",
+            "examples": ["newrelic"]
+          },
+          "eventType" : {
+            "$id": "#relationships/items/eventType",
+            "type": "string",
+            "title": "NRDB Event Type",
+            "description": "Event Type table where telemetry is to be analysed for relationship synthesis",
+            "examples": ["Span", "Transaction", "AjaxRequest"]
+          },
+          "relationship": {
+            "$id": "#relationships/items/relationship",
+            "type":"string",
+            "title": "Relationship Type",
+            "description" : "The relationship edge type you are looking to build between two entity nodes",
+            "examples" : ["CALLS", "HOSTS", "IS", "CONTAINS"],
+            "enum" : ["CALLS", "HOSTS", "IS", "CONTAINS"]
+          },
+          "conditions": {
+            "$id": "#/relationships/items/conditions",
+            "type": "array",
+            "title": "Conditions for the relationship to be synthesized",
+            "description": "Allows to specify that an attribute's value exists, matches a prefix or a value.",
+            "examples": [
+              [
+                {
+                  "attribute": "attributeName",
+                  "value": "value"
+                },
+                {
+                  "attribute": "attributeName",
+                  "prefix": "value"
+                }
+              ]
+            ],
+            "additionalItems": false,
+            "items": {
+              "$id": "#/properties/conditions/items",
+              "oneOf": [
+                {
+                  "$id": "#/properties/conditions/items/anyOf/0",
+                  "type": "object",
+                  "description": "Match attribute and its value or prefix (if requested)",
+                  "examples": [
+                    {
+                      "attribute": "attributeName",
+                      "value": "value"
+                    }
+                  ],
+                  "required": [
+                    "attribute",
+                    "value"
+                  ],
+                  "properties": {
+                    "attribute": {
+                      "$id": "#/properties/conditions/items/anyOf/0/properties/attribute",
+                      "type": "string",
+                      "title": "The attribute name",
+                      "examples": [
+                        "attributeName"
+                      ]
+                    },
+                    "value": {
+                      "$id": "#/properties/conditions/items/anyOf/0/properties/value",
+                      "type": "string",
+                      "title": "The expected value",
+                      "examples": [
+                        "value"
+                      ]
+                    },
+                    "prefix": {
+                      "$id": "#/properties/conditions/items/anyOf/0/properties/prefix",
+                      "type": "string",
+                      "title": "The expected prefix",
+                      "examples": [
+                        "value"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "target": {
+            "$id": "#relationships/items/target",
+            "type": "object",
+            "required" : [
+              "domain",
+              "type",
+              "domainId"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "domain": {
+                "$id": "#relationships/items/target/domain",
+                "type": "string",
+                "title": "Domain of entity",
+                "description": "What domain the related entity belongs to",
+                "examples": ["APM", "EXT", "INFRA", "BROWSER"]
+              },
+              "type": {
+                "$id": "#relationships/items/target/type",
+                "type" : "string",
+                "title": "The Entity Type",
+                "description": "What entity type the related entity belongs to",
+                "examples": ["APPLICATION", "SERVICE", "HOST"]
+              },
+              "domainId": {
+                "$id": "#relationships/items/target/domainId",
+                "type": "object",
+                "title": "Unique Identifier",
+                "additionalProperties": false,
+                "required": [
+                  "attribute"
+                ],
+                "properties": {
+                  "attribute": {
+                    "$id": "#relationships/items/target/domainId/attribute",
+                    "type": "string",
+                    "title": "domainID event type attribute",
+                    "description": "the attribute in which to pull the value from in order to form the domainID of the target entity guid",
+                    "examples" : ["hostname"]
+                  },
+                  "processor": {
+                    "$id": "#relationships/items/target/processor",
+                    "type": "string",
+                    "title": "DomainId Post Processor",
+                    "description" : "Post processor that will execute on value of registered domainID attributes value",
+                    "enum": ["hostExtractor"]
+                  }
+                },
+                "description": "NRDB attribute containing a Unique Identifier of the related entity."
+              },
+              "encodeIdentifierInGUID": {
+                "$id": "#relationships/items/target/encodeIdentifierInGUID",
+                "type": "boolean",
+                "title": "Encode DomainId",
+                "description": "Signify if the domainID is required to be encoded or not. Should match entity definition rule"
+              }
+            }
+          },
+          "source": {
+            "$id": "#relationships/items/source",
+            "type": "object",
+            "required" : [
+              "domain",
+              "type",
+              "domainId"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "domain": {
+                "$id": "#relationships/items/source/domain",
+                "type": "string",
+                "title": "Domain of entity",
+                "description": "What domain the related entity belongs to",
+                "examples": ["APM", "EXT", "INFRA", "BROWSER"]
+              },
+              "type": {
+                "$id": "#relationships/items/source/type",
+                "type" : "string",
+                "title": "The Entity Type",
+                "description": "What entity type the related entity belongs to",
+                "examples": ["APPLICATION", "SERVICE", "HOST"]
+              },
+              "domainId": {
+                "$id": "#relationships/items/source/domainId",
+                "type": "object",
+                "title": "Unique Identifier",
+                "additionalProperties": false,
+                "required": [
+                  "attribute"
+                ],
+                "properties": {
+                  "attribute": {
+                    "$id": "#relationships/items/source/domainId/attribute",
+                    "type": "string",
+                    "title": "domainID event type attribute",
+                    "description": "the attribute in which to pull the value from in order to form the domainID of the source entity guid",
+                    "examples" : ["hostname"]
+                  },
+                  "processor": {
+                    "$id": "#relationships/items/source/processor",
+                    "type": "string",
+                    "title": "DomainId Post Processor",
+                    "description" : "Post processor that will execute on value of registered domainID attributes value",
+                    "enum": ["hostExtractor"]
+                  }
+                },
+                "description": "NRDB attribute containing a Unique Identifier of the related entity."
+              },
+              "encodeIdentifierInGUID": {
+                "$id": "#relationships/items/source/encodeIdentifierInGUID",
+                "type": "boolean",
+                "title": "Encode DomainId",
+                "description": "Signify if the domainID is required to be encoded or not. Should match entity definition rule"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

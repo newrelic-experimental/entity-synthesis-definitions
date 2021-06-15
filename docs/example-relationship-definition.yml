@@ -1,0 +1,52 @@
+# a list of relationships defined in a file under the entity in which the telemetry is sourced
+relationships:
+  # implicit convention is to provide a nrql query that you're trying to replicate here. This helps in
+  # documentation and also during PR approval process.
+   
+  # select entityGuid, peer.hostname from Span where entityGuid is not null and peer.hostname is not
+  # null
+   
+  # what provider is the telemetry coming from. This currently is not used for much other than
+  # providing browsing information 
+  - instrumentation.provider: newrelic
+    # what NRDB event type should we filter telemetry from. eg Transaction, AjaxRequest, Span or a
+    # custom event type
+    eventType: Span
+    # there is a predefined set of relationship types. this is the connecting edge between the
+    # source and target nodes. eg CALLS, HOSTS, CONTAINS, IS
+    relationship: CALLS
+    # information of how to formulate the target|source node of the relationship 
+    [target | source]:
+      # domain of the target|source node
+      domain: EXT
+      # entity type of the target|source node
+      type: SERVICE
+      # the NRDB event type attribute we should use to extract the domainID of the guid of the
+      # target|source node
+      domainId: peer.hostname
+      # should we encode this domainID. This should match the entity definition of synthesis for
+      # corresponding entity type and instrumentation.provider
+      encodeIdentifierInGUID: true
+
+      # we have a predefined list of functions that you can call during synthesis which will help
+      # you extract or transform the domainID attribute value into something you're expecting. 
+      # as an example, take `hostExtractor` if your assigned domainID attribute value is
+      # https://myhost.com/bla/bla then the hostExtractor will return myhost.com ignoring the rest
+      processor: hostExtractor
+
+    # are there any filters you wish to apply. if so, you can match attributes values to what you
+    # expect here. eg attrA = 'foo' AND attrB = 'bar'
+    conditions:
+      - attribute: attrA
+        value: foo
+      - attribute: attrB
+        value: bar
+          #
+
+    # are there any filters you wish to apply. if so, you can match attributes values to what you
+    # expect here. eg attrA = 'foo' AND attrB = 'bar'
+    conditions:
+      - attribute: attrA
+        value: foo
+      - attribute: attrB
+        value: bar

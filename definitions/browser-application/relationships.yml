@@ -1,0 +1,12 @@
+# Select entityGuid, requestUrl from AjaxRequest where requestUrl is not null
+# TODO revise rule 
+relationships:
+  - instrumentation.provider: newRelic
+    eventType: AjaxRequest
+    relationship: CALLS
+    target:
+      domain: EXT
+      type: SERVICE
+      domainId: 
+        attribute: requestUrl
+        processor: hostExtractor

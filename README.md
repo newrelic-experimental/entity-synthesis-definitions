@@ -49,6 +49,7 @@ They must be placed inside the same folder as the entity definition and must be 
 
 - Golden metrics: `golden_metrics.yml`
 - Summary metrics: `summary_metrics.yml `
+- Relationship Definitions: `relationships.yml `
 
 ### Schema definition
 
@@ -57,6 +58,7 @@ When creating a new entity definition you may use the following files as a guide
 - Entity definition: [entity definition example](./docs/example-entity-definition.yml)
 - Golden metrics definition: [golden metrics definition example](./docs/example-entity-golden_metrics.yml)
 - Summary metrics definition: [summary metrics definition example](./docs/example-entity-summary_metrics.yml)
+- Relationship synthesis definition: [relationship synthesis definition example](./docs/example-relationship-definition.yml)
 
 For more concrete examples, you can take a look at the files located on the [definitions](./definitions) folder. 
 
@@ -303,6 +305,10 @@ docker-compose run validate-definitions
 ``` 
 
 You can read more about the current validations [here](/validator/README.md).
+
+## Relationships
+We now support the synthesis of relationships between two given entities from a relationship rule
+based system. More details can be found on the [Relationship Definition Documentation](./docs/relationship_definitions.md)
 
 ## Support
 
