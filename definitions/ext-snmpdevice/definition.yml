@@ -1,0 +1,8 @@
+domain: EXT
+type: SNMPDEVICE
+goldenTags:
+- fanDescr
+- label.mibs
+configuration:
+  entityExpirationTime: QUARTERLY
+  alertable: true
