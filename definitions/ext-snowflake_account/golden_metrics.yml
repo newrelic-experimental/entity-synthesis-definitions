@@ -1,0 +1,58 @@
+warehouseCount:
+  title: "Virtual warehouses (count)"
+  query:
+    select: uniqueCount(NAME)
+    from: SnowflakeAccount
+    where: "metric_type = 'snowflake.billing'"
+  displayAsValue: true
+databaseCount:
+  title: "Databases (count)"
+  query:
+    select: uniqueCount(DATABASE_NAME)
+    from: SnowflakeAccount
+    where: "metric_type = 'snowflake.database_storage'"
+  displayAsValue: true
+creditsUsed:
+  title: "Credits Used"
+  query:
+    select: average(CREDITS_USED_AVERAGE)
+    from: SnowflakeAccount
+    where: "metric_type = 'snowflake.billing'"
+    facet: NAME
+storageUsage:
+  title: "Storage Usage"
+  query:
+    select: average(FAILSAFE_BYTES), average(STAGE_BYTES), average(STORAGE_BYTES)
+    from: SnowflakeAccount
+    where: "metric_type = 'snowflake.storage_usage'"
+pipeUsage:
+  title: "Snowpipe Usage"
+  query:
+    select: average(CREDITS_USED_AVERAGE), average(BYTES_INSERTED_AVERAGE), average(FILES_INSERTED_AVERAGE)
+    from: SnowflakeAccount
+    where: "metric_type = 'snowflake.pipe_usage'"
+replicationUsage:
+  title: "Replication Usage"
+  query:
+    select: average(CREDITS_USED_AVERAGE), average(BYTES_TRANSFERRED_AVERAGE)
+    from: SnowflakeAccount
+    where: "metric_type = 'snowflake.replication_usage'"
+loginHistory:
+  title: "Login History"
+  query:
+    select: filter(count(*), WHERE IS_SUCCESS = 'NO') as 'Failed Logins', filter(count(*), WHERE IS_SUCCESS = 'YES') as 'Successful Logins'
+    from: SnowflakeAccount
+    where: "metric_type = 'snowflake.login_history'"
+automaticClustering:
+  title: "Automatic Clustering Usage"
+  query:
+    select: average(CREDITS_USED_AVERAGE), average(BYTES_RECLUSTERED_AVERAGE), average(ROWS_RECLUSTERED_AVERAGE)
+    from: SnowflakeAccount
+    where: "metric_type = 'snowflake.automatic_clustering'"
+dataTransfer:
+  title: "Data Transfer Usage"
+  query:
+    select: average(BYTES_TRANSFERRED_AVERAGE)
+    from: SnowflakeAccount
+    where: "metric_type = 'snowflake.data_transfer'"
+    facet: source_cloud, target_cloud

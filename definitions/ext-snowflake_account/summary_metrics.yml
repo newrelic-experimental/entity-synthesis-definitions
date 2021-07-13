@@ -1,0 +1,16 @@
+warehouseCount:
+  title: "How many virtual warehouses in your Snowflake account"
+  unit: COUNT
+  query:
+    select: uniqueCount(NAME)
+    from: SnowflakeAccount
+    where: "metric_type = 'snowflake.billing'"
+    eventId: entity.guid
+databaseCount:
+  title: "How many databases in your Snowflake account"
+  unit: COUNT
+  query:
+    select: uniqueCount(DATABASE_NAME)
+    from: SnowflakeAccount
+    where: "metric_type = 'snowflake.database_storage'"
+    eventId: entity.guid
